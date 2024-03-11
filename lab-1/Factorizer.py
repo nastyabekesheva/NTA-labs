@@ -1,4 +1,9 @@
 import math 
+import sympy
+import numpy as np
+
+def xor(a, b):
+    return np.logical_xor(a, b).astype(int)
 
 class Factorizer:
     def __init__(self, n, f=None, method="rho-pollard", patience=50):
@@ -67,6 +72,7 @@ class Factorizer:
 
         primes = [p for p in range(2, self.n + 1) if prime[p]]
         return primes
+
     
     def __trial_division__(self, m):   
         digits = [int(digit) for digit in str(self.n)]
@@ -81,3 +87,94 @@ class Factorizer:
 
         if n == self.n:
             return m
+        
+    def __brillhart_morrison__(self):
+        base = self.__generate_factor_base__()
+        cf = self.__generate_continued_fraction__(len(base))
+        sn = self.__generate_smooth_numbers__(cf)
+        s = [self.__find_prime_degree__(base, sn[i]**2) for i in range(len(sn))]
+        x, y = 1, 1
+        for i in range(len(base)):
+            x *= sn[i]**s[i]
+        for i in base:
+            y *= sn[i]**s[i]
+        
+        
+    def __generate_factor_base__(self):
+        prime = [True] * (self.n + 1)
+        i = 2
+        while i**2 <= self.n:
+            if prime[i] == True:        
+                for j in range(i**2, self.n + 1, i): 
+                    prime[j] = False
+            i += 1
+
+        L = sympy.exp((sympy.log(self.n) / sympy.log(sympy.log(self.n)))**0.5)**(1 / math.sqrt(2))
+        primes = []
+        p = 2
+        while p < L**(1/np.sqrt(2)):
+            if prime[p] and sympy.legendre_symbol(self.n, p) == 1:
+                primes.append(p)
+            p += 1
+        return primes
+    
+    def __generate_continued_fraction__(self, k):
+        v = [1]
+        alpha = [math.sqrt(self.n)]
+        a = [int(math.sqrt(self.n))]
+        u = [int(math.sqrt(self.n))]
+
+        for i in range(k):
+            v.append((self.n-u[i]**2) / v[i])
+            alpha.append((math.sqrt(self.n)+u[i]) / v[i+1])
+            a.append(int(alpha[i]))
+            u.append(a[i+1]*v[i+1]-u[i])
+        
+        return a
+    
+    def __generate_smooth_numbers__(self, a):
+        b = [1, 0]
+        for i in range(len(a)):
+            b.append(a[i]*b[i-1]+b[i-2])
+
+        return b
+    
+    def __solve_slr__(self, s):
+        m, n = s.shape
+        full_solution = []
+
+        undetermined_rows = np.ones((m, 1), dtype=bool)
+        while np.any(undetermined_rows):
+            vector = np.zeros((n, 1), dtype=int)
+            solution = []
+
+            for i in range(n):
+                for x in range(m):
+                    if undetermined_rows[x] and vector[i] == s[x, i] == 1:
+                        vector = xor(vector, s[x])
+                        solution.append(s[x])
+
+            if np.all(vector == 0):
+                full_solution.append(solution)
+
+            undetermined_rows = np.any(s[undetermined_rows] == 1, axis=1)
+
+        return full_solution
+    
+    def __find_prime_degree__(self, factor_base, target_number):
+        # Construct the matrix A
+        A = np.array(factor_base).reshape(-1, 1)
+
+        # Construct the vector b
+        b = np.array([target_number])
+
+        # Solve the linear equation Ax = b
+        x, _, _, _ = np.linalg.lstsq(A, b, rcond=None)
+
+        # Round the degrees to integers
+        x = np.round(x).astype(int)
+
+        # Ensure non-negative values for x
+        x[x < 0] = 0
+
+        return x
