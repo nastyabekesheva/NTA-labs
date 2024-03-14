@@ -24,19 +24,6 @@ class Test:
                 return False
         
         return True
-        
-
-    def __is_euler_pseudoprime__(self, a):
-        if self.p % 2 == 0:
-            return False  # тot an odd number
-
-        if math.gcd(a, self.p) != 1:
-            return False  # gcd(a, p) should be 1
-
-        jacobi_symbol = sympy.jacobi_symbol(a, self.p)
-        euler = pow(a, (self.p - 1) // 2, self.p)
-
-        return jacobi_symbol == euler
 
 T = Test(7, 100)
 print(T.test())
