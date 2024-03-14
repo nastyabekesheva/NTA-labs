@@ -167,18 +167,19 @@ class Factorizer:
         
         
     def __generate_factor_base__(self, a):
-        prime = [True] * (self.n + 1)
+        L = sympy.exp((sympy.log(self.n) / sympy.log(sympy.log(self.n)))**0.5)**(a)
+        prime = [True] * (int(L)+ 1)
         i = 2
-        while i**2 <= self.n:
+        while i < L:
             if prime[i] == True:        
-                for j in range(i**2, self.n + 1, i): 
+                for j in range(i**2, int(L) + 1, i): 
                     prime[j] = False
             i += 1
 
-        L = sympy.exp((sympy.log(self.n) / sympy.log(sympy.log(self.n)))**0.5)**(a)
+        
         primes = [-1, 2]
         p = 3  # Start from 3 to ensure an odd number
-        while p < L**(1/np.sqrt(2)):
+        while p < L:
             if prime[p] and sympy.legendre_symbol(self.n, p) == 1:
                 primes.append(p)
             p += 2  # Increment by 2 to consider only odd numbers
@@ -289,5 +290,5 @@ class Factorizer:
         else:
             return None
 
-F = Factorizer(17873, method="brillhart-morrison", patience=50)
+F = Factorizer(5, method="brillhart-morrison", patience=50)
 print(F.factorize())
