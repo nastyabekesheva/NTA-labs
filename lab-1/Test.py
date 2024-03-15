@@ -4,7 +4,7 @@ import sympy
 
 class Test:
     def __init__(self, p, k):
-        self.p = p
+        self.p = int(p)
         self.k = k
     
     def test(self):
