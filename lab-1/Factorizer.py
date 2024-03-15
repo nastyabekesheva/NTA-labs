@@ -30,7 +30,7 @@ def fx(x, n):
 
 class Factorizer:
     def __init__(self, n, f=fx, method="rho-pollard", patience=50):
-        self.n = n
+        self.n = int(n)
         self.f = f
         self.method = method
         self.patience = patience
@@ -101,37 +101,28 @@ class Factorizer:
         return None
     
     def __generate_primes__(self):
-        # sieve of eratosthenes
-        prime = [True] * (self.n + 1)
-        i = 2
-        while i**2 <= self.n and i <= 47:
-            if prime[i] == True: # if prime[p] is not changed, then it is a prime         
-                for j in range(i**2, self.n + 1, i): # update all multiples of p
-                    prime[j] = False
-            i += 1
-
-        primes = [p for p in range(2, self.n + 1) if prime[p]]
-        return primes
+        return [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
 
     
     def __trial_division__(self, m):   
-        digits = [int(digit) for digit in str(self.n)]
+        #digits = [int(digit) for digit in str(self.n)][::-1]
+        digits = [int(i) for i in bin(self.n)[:1:-1]]
         n = 0
 
-        r = [0]
+        r = [1]
         for i in range(0, len(digits)):
-            r.append(r[0] * 10 % m)
+            r.append(r[i] * 2 % m)
 
         for i in range(0, len(digits)):
             n += digits[i] * r[i] % m
-
-        if n == self.n:
+        if n % m == 0:
             return m
         
     def __brillhart_morrison__(self, a):
         base = self.__generate_factor_base__(a)
         cf = self.__generate_continued_fraction__(len(base)-1)
         sn = self.__generate_smooth_numbers__(cf)
+        sn = [int(i) for i in sn]
         s = [self.__find_mod_prime_degrees__(base, pow(sn[i], 2, self.n)) for i in range(len(sn))]
         s = np.array(replace_none_with_zero(s, len(base)))
         if s.any():
@@ -290,5 +281,8 @@ class Factorizer:
         else:
             return None
 
-F = Factorizer(5, method="brillhart-morrison", patience=50)
-print(F.factorize())
+
+
+
+#F = Factorizer(690, method="trial-division", patience=100)
+#print(F.factorize())
