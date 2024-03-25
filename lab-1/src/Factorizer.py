@@ -26,10 +26,10 @@ def find_index_of_nonzero_array(matrix):
     return np.nonzero(np.any(matrix, axis=1))[0] # Return None if no row has non-zero elements
 
 def fx(x, n):
-    return (x**2+1) % n
+    return (x**2+x+1) % n
 
 class Factorizer:
-    def __init__(self, n, f=fx, method="rho-pollard", patience=50):
+    def __init__(self, n, f=fx, method="rho-pollard", patience=20):
         self.n = int(n)
         self.f = f
         self.method = method
@@ -38,7 +38,7 @@ class Factorizer:
     def factorize(self):
         if self.method == "rho-pollard":
             if self.f:
-                orbit = self.__create_orbit__(2)
+                orbit = self.__create_orbit__(1)
                 d = self.__rho_pollard__(orbit)
                 i = 1
                 while d == None:
@@ -46,20 +46,20 @@ class Factorizer:
                     d = self.__rho_pollard__(orbit)
                     i += 1
                     if i == self.patience:
-                        return None, None
+                        return None
                     
-                return d, int(self.n/d)
+                return d
             
-            return None, None
+            return None
         elif self.method == "trial-division":
             primes = self.__generate_primes__()
             
             for p in primes:
                 d = self.__trial_division__(p)
                 if d != None:
-                    return d, int(self.n/d)
+                    return d
                 
-            return None, None
+            return None
         
         elif self.method == "brillhart-morrison":
             a = 1 / math.sqrt(2)
@@ -72,11 +72,11 @@ class Factorizer:
                     d = np.gcd((x+int(y)), self.n)
 
                     if d > 1 and d < self.n:
-                        return d, int(self.n/d)
+                        return d
                 i += 1
                 a += 0.5
                 
-            return None, None
+            return None
 
 
     def __create_orbit__(self, initial_x):
@@ -237,21 +237,23 @@ class Factorizer:
                     solution = xor(solution, matrix[x])
             if (np.nonzero(solution)[0].size != 0):
                 full_solution.append(solution)'''
-        undet_nz = find_index_of_nonzero_array(matrix[undet])[0]
-        solution = []
-        for i in range(m):
-            if i == undet[undet_nz]:
-                solution.append(1)
-            else:
-                if check_matching_positions([matrix[i], matrix[undet[undet_nz]]]):
+        if len(det) > 0:
+            undet_nz = find_index_of_nonzero_array(matrix[undet])[0]
+            solution = []
+            for i in range(m):
+                if i == undet[undet_nz]:
                     solution.append(1)
                 else:
-                    solution.append(0)
+                    if check_matching_positions([matrix[i], matrix[undet[undet_nz]]]):
+                        solution.append(1)
+                    else:
+                        solution.append(0)
 
-        for i in range(n-len(solution)):
-            solution.append(0)
+            for i in range(n-len(solution)):
+                solution.append(0)
 
-        return solution
+            return solution
+        return []
     
     def __find_mod_prime_degrees__(self, base, num):
         x1 =  self.__find_prime_degrees__(base, num)
@@ -284,5 +286,5 @@ class Factorizer:
 
 
 
-#F = Factorizer(690, method="trial-division", patience=100)
+#F = Factorizer(15003319, method="rho-pollard")
 #print(F.factorize())
