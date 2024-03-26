@@ -9,5 +9,6 @@ RUN apt-get update
 RUN pip install --upgrade pip
 RUN pip install numpy
 RUN pip install sympy
+RUN pip install time
 
 CMD ["python", "script.py"]
