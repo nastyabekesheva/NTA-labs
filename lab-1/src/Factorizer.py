@@ -68,7 +68,7 @@ class Factorizer:
 
             while res == None or self.patience >= i:
                 x, y = self.__brillhart_morrison__(a)
-                if x and y.is_integer():
+                if x and y:
                     d = np.gcd((x+int(y)), self.n)
 
                     if d > 1 and d < self.n:
@@ -121,11 +121,13 @@ class Factorizer:
     def __brillhart_morrison__(self, a):
         base = self.__generate_factor_base__(a)
         cf = self.__generate_continued_fraction__(len(base)-1)
-        sn = self.__generate_smooth_numbers__(cf)
-        sn = [int(i) for i in sn]
-        s = [self.__find_mod_prime_degrees__(base, pow(sn[i], 2, self.n)) for i in range(len(sn))]
-        s = np.array(replace_none_with_zero(s, len(base)))
-        if s.any():
+        sn, s = self.__get_smooth_numbers__(base)
+        #sn = self.__generate_smooth_numbers__(cf, base)
+        #sn = [int(i) for i in sn]
+        #s = [self.__find_mod_prime_degrees__(base, pow(sn[i], 2, self.n)) for i in range(len(sn))]
+        #s = np.array(replace_none_with_zero(s, len(base)))
+        if s:
+            s = np.array(s)
             if len(find_index_of_nonzero_array(s)) > 1:
                 s2 = s % 2
                 xs = self.__solve_slr__(np.array(s2))
@@ -133,6 +135,7 @@ class Factorizer:
                     x, y = 1, 1
                     for i in range(len(base)):
                         x = (x * sn[i]**xs[i]) % self.n
+                    '''
                     pows = []
                     for i in range(len(base)-1):
                         tmp = 0
@@ -147,7 +150,17 @@ class Factorizer:
                         pows[0] = 0
                         pows = [i/2 for i in pows]
                     for i in range(len(base)-1):
-                        y = (y * base[i]**pows[i]) % self.n
+                        y = (y * base[i]**pows[i]) % self.n'''
+                    
+                    y = 1
+                    for j in range(len(base)):
+                        tmp = 0
+                        for i in range(len(s)):
+                            tmp += xs[i] * s[i][j]
+                        tmp //= 2
+
+                        y *= pow(base[j], int(tmp), self.n)
+
                     return x, y
                 else:
                     return None, None
@@ -175,7 +188,31 @@ class Factorizer:
                 primes.append(p)
             p += 2  # Increment by 2 to consider only odd numbers
         return primes
-    
+    def __get_smooth_numbers__(self, base):
+
+        flag = True
+        N = len(base)-1
+
+        while flag:
+
+            cf = self.__generate_continued_fraction__(N)
+            sn = self.__generate_smooth_numbers__(cf)
+
+            sn = [int(i) for i in sn]
+            s = [self.__find_mod_prime_degrees__(base, pow(sn[i], 2, self.n)) for i in range(len(sn))]
+
+            sn = [sn[i] for i, x in enumerate(s) if x is not None]
+            s = [x for x in s if x is not None]
+
+
+            if s and len(s) < len(base):
+                N += 1
+            else:
+                flag = False
+
+        return sn, s
+
+        
     def __generate_continued_fraction__(self, k):
         v = [1]
         alpha = [math.sqrt(self.n)]
@@ -286,5 +323,5 @@ class Factorizer:
 
 
 
-#F = Factorizer(15003319, method="rho-pollard")
-#print(F.factorize())
+F = Factorizer(12799376448857, method="brillhart-morrison")
+print(F.factorize())
