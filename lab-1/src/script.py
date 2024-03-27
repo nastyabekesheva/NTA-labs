@@ -1,7 +1,7 @@
 from Factorizer import Factorizer
 from Test import Test
 import sys
-from functools import reduce
+import time
 
 def print_factors_multiplication(factors, N):
     product = 1
@@ -26,6 +26,10 @@ if __name__ == "__main__":
         except ValueError:
             print("Specified parameter is not an int.")
             flag = False
+
+        print(f"Factorizing: {N}")
+
+        start_time = time.time()
         
         T = Test(N, 100)
 
@@ -79,10 +83,20 @@ if __name__ == "__main__":
 
                 if T1.test() == True and T2.test() == True and x == 1 and N == 1:
                     #factors.append(N)
-                    
+                    end_time = time.time()
+                    elapsed_time = end_time - start_time
+
+                    print("Elapsed time:", elapsed_time, "seconds")
+
                     flag = False
+                    
+
 
             else:
+                end_time = time.time()
+                elapsed_time = end_time - start_time
+
+                print("Elapsed time:", elapsed_time, "seconds")
                 flag = False
     else:
         print("Specified parameter is not an int.")

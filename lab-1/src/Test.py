@@ -1,5 +1,4 @@
 import random
-import math
 import sympy
 
 class Test:

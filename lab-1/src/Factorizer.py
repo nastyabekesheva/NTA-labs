@@ -323,5 +323,5 @@ class Factorizer:
 
 
 
-F = Factorizer(12799376448857, method="brillhart-morrison")
-print(F.factorize())
+#F = Factorizer(17873, method="brillhart-morrison")
+#print(F.factorize())
