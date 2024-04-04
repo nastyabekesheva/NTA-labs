@@ -1,6 +1,3 @@
-import math 
-from sympy import Mod, mod_inverse
-import numpy as np
 import time
 
 def find_index(arr, element):
@@ -16,7 +13,7 @@ def array_product(arr):
     return product
 
 class Factorizer:
-    def __init__(self, p, a, b, method="brute-force"):
+    def __init__(self, a, b, p, method="brute-force"):
         self.p = int(p)
         self.a = int(a)
         self.b = int(b)
@@ -50,9 +47,9 @@ class Factorizer:
         for pi, li in canonical_n.items():
             tmp = pow(self.b, self.n//pi, self.p)
             x = find_index(r_table[pi], tmp)
-            for k in range(0, li-1):
+            for k in range(0, li):
                 tmp = pow(self.b * pow(pow(self.a, -1, self.p), x, self.p), self.n // (pi**(k+1)), self.p)
-                x += find_index(r_table[pi], tmp)
+                x += find_index(r_table[pi], tmp) * pow(pi, k) % self.p
             y.append(x)
 
         P = [pow(pi, li) for pi, li in canonical_n.items()]
@@ -78,7 +75,7 @@ class Factorizer:
         table = {}
         for pi in canonical_n.keys():
             table[pi] = []
-            for j in range(0, pi-1):
+            for j in range(0, pi):
                 table[pi].append(pow(self.a, self.n*j//pi, self.p))
 
         return table
@@ -93,7 +90,9 @@ class Factorizer:
     
 
 
-
+a = 2181
+b = 4539
+p = 4733
                 
-F = Factorizer(46835927, 40339922, 8665466, method="sph")
+F = Factorizer(a, b, p, method="sph")
 print(F.factorize())
