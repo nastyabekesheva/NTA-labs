@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 *._DS_Store
-/*.DS_Store
+*/*.DS_Store
