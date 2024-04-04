@@ -89,10 +89,10 @@ class Factorizer:
         return x
     
 
-
-a = 2181
-b = 4539
-p = 4733
+'''
+a = 417669888250825
+b = 715376408529045
+p = 725646032429207
                 
 F = Factorizer(a, b, p, method="sph")
-print(F.factorize())
+print(F.factorize())'''
