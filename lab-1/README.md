@@ -15,5 +15,5 @@ docker pull bekeshevaaa/nta-lab-1:0.6
 run specifing parameters [number to factorize]
 
 ```
-docker run bekeshevaaa/nta-lab-1:0.6 num
+docker run bekeshevaaa/nta-lab-1:0.6 python3 script.py num
 ```
