@@ -24,5 +24,5 @@ class Test:
         
         return True
 
-T = Test(1495056764861639599, 100)
+T = Test(100001119, 100)
 print(T.test())

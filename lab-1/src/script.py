@@ -81,6 +81,7 @@ if __name__ == "__main__":
                 T1 = Test(x, 1000)
                 T2 = Test(N, 1000)
 
+                print(x, N)
                 if T1.test() == True and T2.test() == True and x == 1 and N == 1:
                     #factors.append(N)
                     end_time = time.time()

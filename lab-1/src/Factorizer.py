@@ -26,7 +26,7 @@ def find_index_of_nonzero_array(matrix):
     return np.nonzero(np.any(matrix, axis=1))[0] # Return None if no row has non-zero elements
 
 def fx(x, n):
-    return (x**2+x+1) % n
+    return (x**2+1) % n
 
 class Factorizer:
     def __init__(self, n, f=fx, method="rho-pollard", patience=20):
@@ -38,12 +38,10 @@ class Factorizer:
     def factorize(self):
         if self.method == "rho-pollard":
             if self.f:
-                orbit = self.__create_orbit__(1)
-                d = self.__rho_pollard__(orbit)
+                d = self.__rho_pollard__()
                 i = 1
                 while d == None:
-                    orbit = self.__create_orbit__(2+i)
-                    d = self.__rho_pollard__(orbit)
+                    d = self.__rho_pollard__()
                     i += 1
                     if i == self.patience:
                         return None
@@ -78,34 +76,27 @@ class Factorizer:
                 
             return None
 
+    def __rho_pollard__(self):
+        x = self.f(2, self.n)
+        y = self.f(self.f(2, self.n), self.n)
+        orbit = [x]
 
-    def __create_orbit__(self, initial_x):
-        orbit = [initial_x]
-        new_x = self.f(initial_x, self.n)
-        i = 1
-        while new_x not in orbit:
-            orbit.append(new_x)
-            new_x = self.f(orbit[i], self.n)
-            i += 1
+        while orbit.count(x) < 2:
+            x = self.f(x, self.n)
+            y = self.f(self.f(y, self.n), self.n)
 
-        return orbit
-    
-    def __rho_pollard__(self, orbit):
-        for k in range(len(orbit)):
-            if 2*k < len(orbit):
-                d = math.gcd(abs(orbit[2*k]-orbit[k]), self.n)
-                #print(f"x_{2*k}, x_{k}: gcd({abs(orbit[2*k]-orbit[k])}, {n}) = {d}")
-                if d != 1 and 2*k != k:
-                    return d
-            
-        return None
+            if x == y:
+                return None
+            d = math.gcd((x-y) % self.n, self.n)
+            if d != 1:
+                return d
+            orbit.append(x)
     
     def __generate_primes__(self):
         return [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
 
     
     def __trial_division__(self, m):   
-        #digits = [int(digit) for digit in str(self.n)][::-1]
         digits = [int(i) for i in bin(self.n)[:1:-1]]
         n = 0
 
@@ -122,10 +113,6 @@ class Factorizer:
         base = self.__generate_factor_base__(a)
         cf = self.__generate_continued_fraction__(len(base)-1)
         sn, s = self.__get_smooth_numbers__(base)
-        #sn = self.__generate_smooth_numbers__(cf, base)
-        #sn = [int(i) for i in sn]
-        #s = [self.__find_mod_prime_degrees__(base, pow(sn[i], 2, self.n)) for i in range(len(sn))]
-        #s = np.array(replace_none_with_zero(s, len(base)))
         if s:
             s = np.array(s)
             if len(find_index_of_nonzero_array(s)) > 1:
@@ -135,23 +122,6 @@ class Factorizer:
                     x, y = 1, 1
                     for i in range(len(base)):
                         x = (x * sn[i]**xs[i]) % self.n
-                    '''
-                    pows = []
-                    for i in range(len(base)-1):
-                        tmp = 0
-                        for j in range(len(s)):
-                            #f = sum([xs[0][j]*s[i][j] for j in range(len(base))]) 
-                            tmp += xs[j]*s[j][i]
-                        pows.append(tmp)
-                        #y = (y * base[i]**f) % self.n
-                    if pows[0] % 2 != 0:
-                        return None, None
-                    else:
-                        pows[0] = 0
-                        pows = [i/2 for i in pows]
-                    for i in range(len(base)-1):
-                        y = (y * base[i]**pows[i]) % self.n'''
-                    
                     y = 1
                     for j in range(len(base)):
                         tmp = 0
@@ -265,15 +235,7 @@ class Factorizer:
     def __solve_slr__(self, matrix):
         matrix, det, undet = self.__matrix_reduction__(matrix)
         m, n = matrix.shape
-        '''full_solution = []
-        for x in undet:
-            solution = np.zeros(n)
-            for y in det:
-                if np.where((matrix[x] == 1) & (matrix[y] == 1))[0].size != 0:
-                    matrix[x] = xor(matrix[x], matrix[y])
-                    solution = xor(solution, matrix[x])
-            if (np.nonzero(solution)[0].size != 0):
-                full_solution.append(solution)'''
+
         if len(det) > 0:
             undet_nz = find_index_of_nonzero_array(matrix[undet])[0]
             solution = []
@@ -321,7 +283,3 @@ class Factorizer:
             return None
 
 
-
-
-#F = Factorizer(17873, method="brillhart-morrison")
-#print(F.factorize())

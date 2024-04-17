@@ -9,8 +9,15 @@
 \usepackage{tabto}
 \usepackage[left=20mm, top=20mm, right=20mm, bottom=20mm, nohead, nofoot]{geometry}
 \usepackage{hyperref}
-\usepackage{tgbonum}
 
+
+\usepackage{tikz}
+\newcommand\round[2]{\par
+    \noindent\begin{tikzpicture}%
+        \node[draw = #1, fill = #1, rectangle, rounded corners, 
+              minimum size = 5.5mm, text = black, text width = 15cm, font = \ttfamily](char){#2};
+    \end{tikzpicture}\par%
+}%
 \begin{document}
 
 \begin{titlepage}
@@ -50,22 +57,46 @@
  Ну і власне я фіксила це вже поверх купи написаного коду, тому воно костильне, але як мінімум на числах з дз працює. 
 \section{Результати}
 
-\tab\texttt{1495056764861639599 = 17 * 6871 * 853103 * 15003319\\
+\tab\texttt{901667173167834173 = 31 * 6211 * 316937 * 14775769\\
+Elapsed time: 0.520775318145752 seconds}.\\
+
+\texttt{3009182572376191 = 30091489 * 100001119\\
+Elapsed time: 8.92608904838562 seconds}.\\
+
+\texttt{1021514194991569 = 10214959 * 100001791\\
+Elapsed time: 8.837704181671143 seconds}.\\
+
+\texttt{4000852962116741 = 40007321 * 100003021\\
+Elapsed time: 53.757988691329956 seconds}.\\
+
+\texttt{1495056764861639599 = 17 * 6871 * 853103 * 15003319\\
 Elapsed time: 32.2915358543396 seconds}.\\
 
 \texttt{15196946347083 = 3 * 89 * 2297 * 24779017\\
-Elapsed time: 4.913546800613403 seconds}.\\
+Elapsed time: 1.9654781818389893 seconds}.\\
 
+\texttt{499664789704823 = 15003319 * 33303617\\
+Elapsed time: 1.6105360984802246 seconds}.\\
+
+\texttt{269322119833303 = 10868959 * 24779017\\
+Elapsed time: 1.863227128982544 seconds}.\\
+
+\texttt{679321846483919 = 28065119 * 24205201\\
+Elapsed time: 2.9098618030548096 seconds.}\\
+
+\texttt{96267366284849 = 962623 * 100005263\\
+Elapsed time: 20.774596691131592 seconds.}\\
 
 \texttt{61333127792637 = 3 * 89 * 2297 * 100005263\\
-Elapsed time: 6.326192855834961 seconds}.\\
+Elapsed time: 17.09094500541687 seconds}.\\
 
-\texttt{17873 = 61 * 293\\
-Elapsed time: 0.12788724899291992 seconds}.
+\texttt{2485021628404193 = 24849479 * 100002967\\
+Elapsed time: 5.502688884735107 seconds}.\\
 
-\newpage
 \section{Висновки}
 \tab В результаті виконання лабораторної роботи повторно ознайомилась з матеріалами з лекцій. Моя реалізація БМ не є дуже дієвою на великих числах через вище описану проблему. Але можу зазначити, що вийшло реалізувати швидкий розв'язок СЛР. В випадку з числами які мають декілька простих не дуже великих дільників комбінація методу пробних ділень та  $\rho$-методу Полларда справляються непогано.
 
+\section{Docker.}
+\round{gray!30}{docker run bekeshevaaa/nta-lab-1:0.7 python3 script.py n}
 
 \end{document}
