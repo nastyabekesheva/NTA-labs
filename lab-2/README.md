@@ -13,5 +13,5 @@ docker pull bekeshevaaa/nta-lab-2:0.1
 run specifing parameters [dlp]
 
 ```
-docker run bekeshevaaa/nta-lab-2:0.1 a b p
+docker run bekeshevaaa/nta-lab-2:0.1 python3 script.py a b p
 ```
