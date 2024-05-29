@@ -5,12 +5,11 @@ import time
 
 if __name__ == "__main__":
     factors = []
-    flag = True
     try:
-        a, b, n = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
+        a, b, n, type = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
         print("Solving...")
         start_time = time.time()
-        ic = IC(a, b, n)
+        ic = IC(a, b, n, type)
         result = ic.solve()
         end_time = time.time()
 

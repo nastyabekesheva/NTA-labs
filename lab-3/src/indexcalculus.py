@@ -26,10 +26,11 @@ def columns_with_only_zeros(matrix):
     return indices.tolist()
 
 class IC:
-    def __init__(self, a, b, n):
+    def __init__(self, a, b, n, type=1):
         self.n = int(n)
         self.a = int(a)
         self.b = int(b)
+        self.type = type
         self.lock = threading.Lock()
         self.stop_event = threading.Event()
 
@@ -136,45 +137,42 @@ class IC:
                         break
         
         
-    def __generate_sle__(self):
-        self.sle = []
+    def __generate_sle__(self):  
+        if self.type == 0:
 
-        # Calculate chunk size
-        chunk_size = max(1, self.n // (4 * (len(self.base) + 15)))
-        print(f"Chunk size: {chunk_size}")
+            self.sle = []
+            i = 0
 
-        # Create tasks as ranges of numbers
-        tasks = [range(i, min(i + chunk_size, self.n)) for i in range(0, self.n, chunk_size)]
+            while len(self.sle) <= len(self.base)+15:
+                number, is_smooth_number = self.__smooth_check__(i)
+                if is_smooth_number:
+                    self.sle.append(number)
 
-        # Create and start threads
-        threads = []
-        for task in tasks:
-            thread = threading.Thread(target=self.__worker__, args=(task,))
-            thread.start()
-            threads.append(thread)
+                i += 1
 
-        # Wait for all threads to complete
-        for thread in threads:
-            thread.join()
+            self.sle = np.array(self.sle, dtype=int)
+        else:
+            self.sle = []
 
-        self.sle = np.array(self.sle)
+            # Calculate chunk size
+            chunk_size = max(1, self.n // (4 * (len(self.base) + 15)))
+            print(f"Chunk size: {chunk_size}")
 
-        # Return the first len(self.base) + 15 smooth numbers found
-        return np.array(self.sle[:len(self.base) + 15])
+            # Create tasks as ranges of numbers
+            tasks = [range(i, min(i + chunk_size, self.n)) for i in range(0, self.n, chunk_size)]
 
+            # Create and start threads
+            threads = []
+            for task in tasks:
+                thread = threading.Thread(target=self.__worker__, args=(task,))
+                thread.start()
+                threads.append(thread)
 
+            # Wait for all threads to complete
+            for thread in threads:
+                thread.join()
 
-
-        '''sle = []
-        i = 0
-
-        while len(sle) <= len(self.base)+35:
-            number, is_smooth_number = self.__smooth_check__(i)
-            if is_smooth_number:
-                sle.append(number)
-
-            i += 1'''
-        return np.array(sle, dtype=int)
+            self.sle = np.array(self.sle, dtype=int)
         
     
     def __solve_sle__(self):
@@ -232,7 +230,7 @@ class IC:
                 i += 1
 
 if __name__ == '__main__':
-    ic = IC(14837213830, 38662976351, 44392159481)
+    ic = IC(26132929097130, 18931503409489, 90043656944741, type=1)
     print(ic.solve())
 
 
